@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Performance Predictor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input, select, button {
+      padding: 8px;
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 15px;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Student Performance Predictor</h1>
+  <form id="prediction-form">
+    <label for="gender">Gender:</label>
+    <select id="gender" name="gender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+
+    <label for="race_ethnicity">Race/Ethnicity:</label>
+    <select id="race_ethnicity" name="race_ethnicity">
+      <option value="group A">Group A</option>
+      <option value="group B">Group B</option>
+      <option value="group C">Group C</option>
+      <option value="group D">Group D</option>
+      <option value="group E">Group E</option>
+    </select>
+
+    <label for="parental_education">Parental Level of Education:</label>
+    <select id="parental_education" name="parental_level_of_education">
+      <option value="high school">High School</option>
+      <option value="some college">Some College</option>
+      <option value="associate's degree">Associate's Degree</option>
+      <option value="bachelor's degree">Bachelor's Degree</option>
+      <option value="master's degree">Master's Degree</option>
+      <option value="some high school">Some High School</option>
+    </select>
+
+    <label for="lunch">Lunch:</label>
+    <select id="lunch" name="lunch">
+      <option value="standard">Standard</option>
+      <option value="free/reduced">Free/Reduced</option>
+    </select>
+
+    <label for="test_preparation">Test Preparation Course:</label>
+    <select id="test_preparation" name="test_preparation_course">
+      <option value="none">None</option>
+      <option value="completed">Completed</option>
+    </select>
+
+    <button type="button" id="predict-button">Predict</button>
+  </form>
+
+  <div id="result" class="result" style="display: none;">
+    <h3>Prediction Result:</h3>
+    <p id="predicted-score"></p>
+  </div>
+
+  <script>
+    document.getElementById('predict-button').addEventListener('click', async () => {
+      const formData = {
+        gender: document.getElementById('gender').value,
+        race_ethnicity: document.getElementById('race_ethnicity').value,
+        parental_level_of_education: document.getElementById('parental_education').value,
+        lunch: document.getElementById('lunch').value,
+        test_preparation_course: document.getElementById('test_preparation').value
+      };
+
+      try {
+        const response = await fetch('http://raspidev:8000/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch prediction.');
+        }
+
+        const data = await response.json();
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('predicted-score').textContent = `Predicted Score: ${data.predicted_score}`;
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
